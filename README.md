@@ -19,12 +19,10 @@ source venv/bin/activate
 pip install -e .
 ```
 
-### Option 2: Quick setup (legacy)
+### Option 2: Install from GitHub
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install fonttools brotli
+pip install git+https://github.com/marctjones/fontmeta.git@v1.0.0
 ```
 
 ## Usage
@@ -102,7 +100,7 @@ check-fonts:
 ```yaml
 - name: Check font licenses
   run: |
-    pip install fontmeta
+    pip install git+https://github.com/marctjones/fontmeta.git@v1.0.0
     find fonts/ -name "*.woff2" -exec fontmeta {} --verify \;
 ```
 
@@ -253,21 +251,25 @@ LICENSE INFORMATION
 }
 ```
 
-## Fonts Included
+## Sample Fonts for Testing
 
-This repository includes sample fonts for testing:
+This repository includes sample fonts (stored in Git LFS) for development and testing:
 
 ### Inter (SIL OFL)
 - **License**: SIL Open Font License 1.1
 - **Source**: https://github.com/rsms/inter
 - **Designer**: Rasmus Andersson
 - **Formats**: TTC, TTF, WOFF2
+- **Location**: `fonts/inter/`
 
 ### Roboto (Apache)
 - **License**: Apache License 2.0
 - **Source**: https://github.com/google/roboto
 - **Designer**: Christian Robertson (Google)
 - **Formats**: TTF
+- **Location**: `fonts/roboto/`
+
+**Note**: Sample fonts are stored in Git LFS and are not required to use the tool - they're only needed for running the test suite.
 
 ## Use Cases
 
@@ -318,6 +320,37 @@ This tool helps ensure that:
 - Python 3.8+
 - fonttools 4.61.1+
 - brotli 1.2.0+ (for WOFF2 support)
+
+## Development
+
+### Running Tests
+
+```bash
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Run test suite
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ --cov=fontmeta
+```
+
+### Project Structure
+
+```
+fontmeta/
+├── src/fontmeta/          # Source code
+│   ├── __init__.py
+│   ├── cli.py             # CLI entry point
+│   └── license_texts.py   # OSI license verification
+├── tests/                 # Test suite
+│   ├── __init__.py
+│   └── test_cli.py        # Unit tests
+├── fonts/                 # Sample fonts (Git LFS)
+├── pyproject.toml         # Package configuration
+└── README.md             # This file
+```
 
 ## License
 
