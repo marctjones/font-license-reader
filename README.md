@@ -2,16 +2,28 @@
 
 Python tool to extract and verify licensing metadata from font files (TTF, OTF, WOFF, WOFF2).
 
-## Setup
+## Installation
 
-1. Create and activate virtual environment:
+### Option 1: Install from source (recommended for development)
+
+```bash
+# Clone the repository
+git clone https://github.com/marctjones/fontmeta.git
+cd fontmeta
+
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install in editable mode with dependencies
+pip install -e .
+```
+
+### Option 2: Quick setup (legacy)
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-```
-
-2. Install dependencies:
-```bash
 pip install fonttools brotli
 ```
 
@@ -21,28 +33,28 @@ pip install fonttools brotli
 
 ```bash
 # Show license information (default)
-python fontmeta.py fonts/inter/Inter-Regular.woff2 --license
+fontmeta fonts/inter/Inter-Regular.woff2 --license
 
 # Show all metadata
-python fontmeta.py fonts/roboto/Roboto-Regular.ttf --all
+fontmeta fonts/roboto/Roboto-Regular.ttf --all
 
 # Show specific sections
-python fontmeta.py font.woff2 --basic          # Basic info
-python fontmeta.py font.woff2 --copyright      # Copyright
-python fontmeta.py font.woff2 --embedding      # Embedding permissions
-python fontmeta.py font.woff2 --vendor         # Designer/vendor info
+fontmeta font.woff2 --basic          # Basic info
+fontmeta font.woff2 --copyright      # Copyright
+fontmeta font.woff2 --embedding      # Embedding permissions
+fontmeta font.woff2 --vendor         # Designer/vendor info
 
 # Show complete name table (all platforms/encodings)
-python fontmeta.py font.woff2 --full
+fontmeta font.woff2 --full
 
 # Quick verification (returns exit code 0 if license found)
-python fontmeta.py font.woff2 --verify
+fontmeta font.woff2 --verify
 
 # Verify license against official OSI-approved versions
-python fontmeta.py font.woff2 --verify-canonical
+fontmeta font.woff2 --verify-canonical
 
 # JSON output for programmatic use
-python fontmeta.py font.woff2 --format json
+fontmeta font.woff2 --format json
 ```
 
 ### Batch Processing
@@ -56,6 +68,42 @@ python fontmeta.py font.woff2 --format json
 
 # Export all metadata as JSON
 ./check_fonts.sh fonts/ json > all_fonts.json
+
+# Or use find with xargs for custom processing
+find fonts/ -name "*.woff2" | xargs -I {} fontmeta {} --verify
+
+# Check fonts and filter by license type
+find fonts/ -name "*.ttf" -exec fontmeta {} --format json \; | jq 'select(.license.type == "Apache License")'
+```
+
+### Automation Examples
+
+**Check fonts in a shell script:**
+```bash
+#!/bin/bash
+# Check font and take action based on result
+
+if fontmeta "$1" --verify; then
+  echo "✓ Font has valid license"
+  cp "$1" approved-fonts/
+else
+  echo "✗ Font missing license - needs review"
+  mv "$1" review-needed/
+fi
+```
+
+**Simple Makefile target:**
+```makefile
+check-fonts:
+	@find fonts/ -name "*.woff2" | xargs -I {} fontmeta {} --verify
+```
+
+**CI/CD integration (GitHub Actions):**
+```yaml
+- name: Check font licenses
+  run: |
+    pip install fontmeta
+    find fonts/ -name "*.woff2" -exec fontmeta {} --verify \;
 ```
 
 ## Command Line Options

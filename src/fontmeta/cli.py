@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from fontTools.ttLib import TTFont
 try:
-    from license_texts import verify_license_text
+    from .license_texts import verify_license_text
     HAVE_LICENSE_VERIFICATION = True
 except ImportError:
     HAVE_LICENSE_VERIFICATION = False
@@ -47,10 +47,19 @@ NAME_IDS = {
 
 def load_font(font_path):
     """Load font file and return TTFont object"""
+    path = Path(font_path)
+
+    # Check if file exists
+    if not path.exists():
+        print(f"Error: Font file not found: {font_path}", file=sys.stderr)
+        sys.exit(1)
+
+    # Try to load the font
     try:
-        return TTFont(font_path)
+        return TTFont(str(font_path))
     except Exception as e:
-        print(f"Error loading font: {e}", file=sys.stderr)
+        print(f"Error: Could not load font file: {font_path}", file=sys.stderr)
+        print(f"Make sure it's a valid TTF, OTF, WOFF, or WOFF2 file.", file=sys.stderr)
         sys.exit(1)
 
 
@@ -389,12 +398,8 @@ Examples:
 
     args = parser.parse_args()
 
-    # Load font
+    # Load font (error handling is in load_font function)
     font_path = Path(args.font)
-    if not font_path.exists():
-        print(f"Error: File not found: {font_path}", file=sys.stderr)
-        sys.exit(1)
-
     font = load_font(font_path)
 
     # Verify mode

@@ -4,7 +4,7 @@ Test script to demonstrate license verification
 Shows what happens with non-canonical license text
 """
 
-from license_texts import verify_license_text
+from fontmeta.license_texts import verify_license_text
 
 # Test various license texts
 test_cases = [

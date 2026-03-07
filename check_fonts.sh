@@ -22,7 +22,7 @@ case "$MODE" in
         echo "Verifying licenses in: $DIR"
         echo "========================================"
         find "$DIR" -type f \( -name "*.ttf" -o -name "*.otf" -o -name "*.woff" -o -name "*.woff2" \) | while read font; do
-            python fontmeta.py "$font" --verify
+            python -m fontmeta.cli "$font" --verify
         done
         ;;
     json)
@@ -34,13 +34,13 @@ case "$MODE" in
             else
                 echo ","
             fi
-            python fontmeta.py "$font" --format json
+            python -m fontmeta.cli "$font" --format json
         done
         echo "]"
         ;;
     text)
         find "$DIR" -type f \( -name "*.ttf" -o -name "*.otf" -o -name "*.woff" -o -name "*.woff2" \) | while read font; do
-            python fontmeta.py "$font" --all
+            python -m fontmeta.cli "$font" --all
             echo ""
         done
         ;;
